@@ -176,6 +176,8 @@
     NSMutableURLRequest *request = [self newMutableRequestWithPath:path isDirectory:NO];
     [request setHTTPBody:data];
     [request curl_setCreateIntermediateDirectories:createIntermediates];
+	if (permissions)
+		[request curl_setPostTransferCommands:[NSArray arrayWithObject:[NSString stringWithFormat:@"SITE CHMOD %lu %@", [permissions unsignedLongValue], [path lastPathComponent]]]];
     
     BOOL result = [_handle loadRequest:request error:error];
     [request release];
@@ -183,7 +185,7 @@
     return result;
 }
 
-- (BOOL)createDirectoryAtPath:(NSString *)path withIntermediateDirectories:(BOOL)createIntermediates error:(NSError **)error;
+- (BOOL)createDirectoryAtPath:(NSString *)path permissions:(NSNumber *)permissions withIntermediateDirectories:(BOOL)createIntermediates error:(NSError **)error;
 {
     // Navigate to the directory above the one to be created
     // CURLOPT_NOBODY stops libcurl from trying to list the directory's contents
@@ -193,7 +195,10 @@
     
     // Custom command to delete the file once we're in the correct directory
     // CURLOPT_PREQUOTE does much the same thing, but sometimes runs the delete command twice in my testing
-    [request curl_setPostTransferCommands:[NSArray arrayWithObject:[@"MKD " stringByAppendingString:[path lastPathComponent]]]];
+	NSMutableArray *postTransferCommands = [NSMutableArray arrayWithObject:[@"MKD " stringByAppendingString:[path lastPathComponent]]];
+	if (permissions)
+		[postTransferCommands addObject:[NSString stringWithFormat:@"SITE CHMOD %lu %@", [permissions unsignedLongValue], [path lastPathComponent]]];
+    [request curl_setPostTransferCommands:postTransferCommands];
     
     
     BOOL result = [_handle loadRequest:request error:error];

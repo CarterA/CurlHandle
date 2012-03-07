@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Karelia Software. All rights reserved.
 //
 
-#import <CURLHandle/CURLHandle.h>
+#import "CURLHandle.h"
 
 
 @protocol CURLFTPSessionDelegate;
@@ -36,7 +36,7 @@
 
 - (BOOL)createFileAtPath:(NSString *)path contents:(NSData *)data permissions:(NSNumber *)permissions withIntermediateDirectories:(BOOL)createIntermediates error:(NSError **)error;
 
-- (BOOL)createDirectoryAtPath:(NSString *)path withIntermediateDirectories:(BOOL)createIntermediates error:(NSError **)error;
+- (BOOL)createDirectoryAtPath:(NSString *)path permissions:(NSNumber *)permissions withIntermediateDirectories:(BOOL)createIntermediates error:(NSError **)error;
 
 - (BOOL)removeFileAtPath:(NSString *)path error:(NSError **)error;
 
